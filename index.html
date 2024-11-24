@@ -1,14 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="This is a page which contains description about harry - the sigma"> 
-    <title>About Harry - CodeWithHarry</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System with talha</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
 </head>
 <body>
-    <h1>Harry</h1>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus, inventore laboriosam? Libero qui, a illo laborum, in aspernatur maxime temporibus quibusdam ullam quia obcaecati culpa iste est odit, voluptate quis explicabo reprehenderit. Autem cum totam laudantium possimus ipsam. Ut voluptates consectetur perferendis amet velit odit.</p>
+  <canvas id="solarSystem"></canvas>
+  <script>
+    const canvas = document.getElementById("solarSystem");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    const planets = [
+      { radius: 30, color: "yellow", distance: 0, orbitSpeed: 0, glow: "rgba(255, 204, 0, 0.6)" }, // Sun
+      { radius: 5, color: "gray", distance: 70, orbitSpeed: 0.1, glow: "rgba(192, 192, 192, 0.4)" }, // Mercury
+      { radius: 7, color: "orange", distance: 120, orbitSpeed: 0.08, glow: "rgba(255, 165, 0, 0.4)" }, // Venus
+      { radius: 8, color: "blue", distance: 170, orbitSpeed: 0.05, glow: "rgba(0, 0, 255, 0.4)" }, // Earth
+      { radius: 6, color: "red", distance: 220, orbitSpeed: 0.03, glow: "rgba(255, 69, 0, 0.4)" }, // Mars
+      { radius: 10, color: "brown", distance: 280, orbitSpeed: 0.02, glow: "rgba(165, 42, 42, 0.4)" }, // Jupiter
+      { radius: 9, color: "gold", distance: 350, orbitSpeed: 0.015, glow: "rgba(255, 215, 0, 0.4)" }, // Saturn
+      { radius: 7, color: "cyan", distance: 420, orbitSpeed: 0.01, glow: "rgba(0, 255, 255, 0.4)" }, // Uranus
+      { radius: 6, color: "purple", distance: 480, orbitSpeed: 0.008, glow: "rgba(138, 43, 226, 0.4)" }, // Neptune
+    ];
+
+    const stars = [];
+    const numStars = 200;
+
+    // Create static stars in the background
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2,
+        brightness: Math.random(),
+        twinkleSpeed: Math.random() * 0.02 + 0.01,
+      });
+    }
+
+    function drawStars() {
+      stars.forEach((star) => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
+        ctx.fill();
+        ctx.closePath();
+
+        // Twinkle effect
+        star.brightness += star.twinkleSpeed;
+        if (star.brightness > 1 || star.brightness < 0) {
+          star.twinkleSpeed *= -1;
+        }
+      });
+    }
+
+    function drawOrbits() {
+      planets.forEach((planet) => {
+        if (planet.distance > 0) { // Exclude the Sun
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, planet.distance, 0, Math.PI * 2);
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.closePath();
+        }
+      });
+    }
+
+    function drawGlow(x, y, radius, color) {
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius * 3);
+      gradient.addColorStop(0, color);
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.beginPath();
+      ctx.arc(x, y, radius * 3, 0, Math.PI * 2);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawPlanets() {
+      planets.forEach((planet) => {
+        const x =
+          centerX + Math.cos(angle * planet.orbitSpeed) * planet.distance;
+        const y =
+          centerY + Math.sin(angle * planet.orbitSpeed) * planet.distance;
+
+        // Draw Glow
+        drawGlow(x, y, planet.radius, planet.glow);
+
+        // Draw Planet
+        ctx.beginPath();
+        ctx.arc(x, y, planet.radius, 0, Math.PI * 2);
+        ctx.fillStyle = planet.color;
+        ctx.fill();
+        ctx.closePath();
+      });
+    }
+
+    function drawSolarSystem() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw stars
+      drawStars();
+
+      // Draw orbit lines
+      drawOrbits();
+
+      // Draw planets with glow
+      drawPlanets();
+
+      angle += 0.02;
+      requestAnimationFrame(drawSolarSystem);
+    }
+
+    let angle = 0;
+    drawSolarSystem();
+  </script>
 </body>
-</html>
+    </html>
+    
